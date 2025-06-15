@@ -2,6 +2,8 @@
 based https://github.com/terroo/tetris
 # <center>俄罗斯方块</center>
 
+## 具体文件结构还没细分 等笔者考完期末来划()
+
 ## 背景介绍
 以[\[text\](https://github.com/terroo/tetris)](https://github.com/terroo/tetris)为基础的优化升级，
 原来的代码基础文件为
