@@ -2,10 +2,10 @@
 based https://github.com/terroo/tetris
 # <center>俄罗斯方块</center>
 
-## 具体文件结构还没细分 等笔者考完期末来划()
+### 具体文件结构已完整划分并上传--2025.7.1
 
 ## 背景介绍
-以[\[text\](https://github.com/terroo/tetris)](https://github.com/terroo/tetris)为基础的优化升级，
+以[(https://github.com/terroo/tetris)](https://github.com/terroo/tetris)为基础的优化升级，
 原来的代码基础文件为
 - tetris.hpp: 游戏常量定义和声明
 - tetris.cpp: 初始化和创建
@@ -24,11 +24,23 @@ based https://github.com/terroo/tetris
 ### 析构函数声明
 原代码依赖shared_ptr自动释放，但SFML的sf::RenderWindow可能在程序退出时仍未关闭，导致GPU资源未正确释放。
 因此显式关闭窗口确保SFML内部资源（如OpenGL上下文）被清理。
+```cpp
+Tetris::~Tetris() {
+    if(window && window->isOpen()) window->close(); 
+    // 无需手动释放shared_ptr，但确保窗口关闭
+}
+```
 
-![alt text](image-8.png)
 ### 数组访问保护（maxLimit函数）
 原代码area[z[i].y][z[i].x]可能越界访问（如旋转后x<0或y>=lines）。因此严格检查边界后再访问数组，避免崩溃。
-![alt text](image-9.png)
+```cpp
+for(std::size_t i{}; i < squares; ++i) {
+        if(z[i].x >= cols || z[i].y >= lines ||  // 先检查边界
+          (z[i].y >= 0 && z[i].x >= 0 && area[z[i].y][z[i].x])) { // 再检查碰撞
+            return true;
+        }
+    }
+```
 
 ### 新增头文件
 原代码隐式依赖这些头文件（如std::to_string来自*string*），跨平台编译时可能出现"未声明标识符"错误。因此显式声明依赖，确保可移植性。
@@ -44,13 +56,24 @@ based https://github.com/terroo/tetris
 
 按A可以切换AI进行游戏，再按A则取消AI模式。
 
-## 
+## 架构
+
+流程图：
+
+![alt text](.\\src\\resources\\png\\image-pic3.png)
+
+文件：
+
+![alt text](.\\src\\resources\\png\\image-pic4.png)
 
 ## 难度设置
 
 设置了简单、中等、困难三个选项，方块下落速度由慢到快。
 (枚举难度级别状态)
-![alt text](image-6.png)
+```cpp
+// 难度设置
+  std::array<float, 3> difficultySpeeds {0.5f, 0.3f, 0.1f}; // 简单、中等、困难的下落速度
+```
 
 ## 炸弹功能
 
@@ -83,7 +106,7 @@ void Tetris::useBomb() {
 
 ## 加入AI算法功能实现自动游戏
 
-![alt text](image-11.png)
+![alt text](.\\src\\resources\\png\\image-pic5.png)
 基于贪心算法（Greedy Algorithm）​​，结合了​​启发式评估函数实现。
 
 我设置了偏向于右边放置(因为是左上角生成，这样关闭AI还能更好地继续游戏)，核心便是平整度评估。
@@ -119,12 +142,12 @@ opt.score = evaluateFlatness() + (z[0].x - cols/2);
 ### 界面展示
 进入界面：
 
-![alt text](image-1.png)
+![alt text](.\\src\\resources\\png\\image-pic1.png)
 
 难度设置界面和游戏说明界面类似
 
 ### 运行界面展示及描述
-![alt text](image-2.png)
+![alt text](.\\src\\resources\\png\\image-pic2.png)
 
 方块从左上角出现并下落，消一行得一分，每得三分获得一个炸弹。
 
@@ -136,7 +159,7 @@ opt.score = evaluateFlatness() + (z[0].x - cols/2);
 https://www.bilibili.com/video/BV1ugM8zqE79/?vd_source=74a5735c1064ac78efb8ce06cdc8c11c
 
 ### 源代码
-
+https://github.com/icsaltby/tetris_icsalt
 
 ## 参考
 - 项目基础：https://github.com/terroo/tetris
